@@ -1,4 +1,25 @@
 canvas {
-  background-color: #ffffff;
-  border: 1px solid #000000;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    margin: 10px;
+}
+
+#mainc {
+    float: left;
+}
+
+#config {
+    padding: 10px;
+    margin: 10px;
+}
+
+#output {
+    margin: 10px;
+    padding: 10px;
+    clear: both;
+}
+
+#outXyPicPane {
+    padding: 10px;
+    border: 1px solid #000000;
 }

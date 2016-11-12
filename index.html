@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Diagram Editor</title>
+    <title>Diagram Editor for Xy-pic</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script type="text/javascript" src="js/body.js"></script>
   </head>
   <body>
-    <canvas width="600" height="600"></canvas>
-    <pre><code id="output"></code></pre>
+    <h1>Diagram Editor for Xy-pic</h1>
+    <canvas id="mainc" width="600" height="600"></canvas>
+    <div id="config">
+      <div id="global">
+        <h2>Global Config</h2>
+        <table>
+          <tr>
+            <td>Width</td>
+            <td><input type="number" id="dgmWidth" onchange="reset();" step="1" min="1" value="2" /></td>
+          </tr>
+          <tr>
+            <td>Height</td>
+            <td><input type="number" id="dgmHeight" onchange="reset();" step="1" min="1" value="2" /></td>
+          </tr>
+        </table>
+      </div>
+      <div id="object">
+        <h2>Local Config</h2>
+      </div>
+    </div>
+    <div id="output">
+      <h2>Xy-pic</h2>
+      <pre id="outXyPicPane"><code id="outXyPicContents"></code></pre>
+    </div>
   </body>
 </html>
