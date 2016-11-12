@@ -23,6 +23,9 @@ class EdgeLabel {
     toXyPic() {
         return this.pos + "-{" + this.str + "}";
     }
+    toString() {
+        return this.str;
+    }
 }
 
 class Edge {
@@ -33,11 +36,11 @@ class Edge {
         this.style = style;     // EdgeStyle
         var dx = stepX * dgm.dx;
         var dy = stepY * dgm.dy;
-        var d = radius / Math.sqrt(dx * dx + dy * dy);
-        this.x0 = x + d * dx;
-        this.y0 = y + d * dy;
-        this.x1 = x + (1 - d) * stepX * dgm.dx;
-        this.y1 = y + (1 - d) * stepY * dgm.dy;
+        this.theta = Math.atan2(dy, dx);
+        this.x0 = x + radius * Math.cos(this.theta);
+        this.y0 = y + radius * Math.sin(this.theta);
+        this.x1 = x + dx - radius * Math.cos(this.theta);
+        this.y1 = y + dy - radius * Math.sin(this.theta);
     }
     toXyPic() {
         var dir = "";
@@ -54,10 +57,22 @@ class Edge {
         return "\\ar[" + dir + "]" + this.style.toXyPic() + this.label.toXyPic();
     }
     draw(c) {
+        var l = 20;
+        var phi = 0.3;
         c.beginPath();
         c.moveTo(this.x0, this.y0);
         c.lineTo(this.x1, this.y1);
         c.stroke();
+        c.beginPath();
+        c.moveTo(this.x1, this.y1);
+        c.lineTo(this.x1 - l * Math.cos(this.theta + phi),
+                 this.y1 - l * Math.sin(this.theta + phi));
+        c.stroke();
+        c.moveTo(this.x1, this.y1);
+        c.lineTo(this.x1 - l * Math.cos(this.theta - phi),
+                 this.y1 - l * Math.sin(this.theta - phi));
+        c.stroke();
+        c.fillText(this.label, (this.x0 + this.x1) / 2, (this.y0 + this.y1) / 2);
     }
 }
 
