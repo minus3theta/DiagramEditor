@@ -5,22 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <script type="text/javascript" src="js/phina.js"></script>
     <script type="text/javascript" src="js/body.js"></script>
   </head>
   <body>
     <h1>Diagram Editor for Xy-pic</h1>
-    <canvas id="mainc" width="600" height="600"></canvas>
+    <canvas id="world"></canvas>
     <div id="config">
       <div id="global">
         <h2>Global Config</h2>
         <table>
           <tr>
             <td>Width</td>
-            <td><input type="number" id="dgmWidth" onchange="reset();" step="1" min="1" value="2" /></td>
+            <td><input type="number" id="dgmWidth" step="1" min="1" value="2" /></td>
           </tr>
           <tr>
             <td>Height</td>
-            <td><input type="number" id="dgmHeight" onchange="reset();" step="1" min="1" value="2" /></td>
+            <td><input type="number" id="dgmHeight" step="1" min="1" value="2" /></td>
           </tr>
         </table>
       </div>

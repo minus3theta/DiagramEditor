@@ -1,10 +1,6 @@
-var canvas;
-var cWidth;
-var cHeight;
 var outXyPic;
 var dgm;
 var radius;
-var fontHeight;
 
 var conf;
 
@@ -112,26 +108,86 @@ class Node {
     }
 }
 
-class Diagram {
-    constructor(w, h) {
-        this.w = w;             // Number
-        this.h = h;             // Number
-        this.table = new Array(h); // [[Node]]
-        this.dx = cWidth / w;
-        this.dy = cHeight / h;
+phina.globalize();
+
+phina.main(function() {
+    var app = GameApp({
+        startLabel: "main",
+        domElement: document.getElementById("world"),
+        width: 600,
+        height: 600,
+        fit: false
+    });
+    app.run();
+});
+
+phina.define("MainScene", {
+    superClass: "DisplayScene",
+    init: function() {
+        this.superInit();
+        this.backgroundColor = '#fff';
+        outXyPic = document.getElementById("outXyPicContents");
+        conf = document.getElementById("object");
+        this.dgmWidthElem = document.getElementById("dgmWidth");
+        this.dgmHeightElem = document.getElementById("dgmHeight");
+        this.dgmWidth = this.dgmWidthElem.value;
+        this.dgmHeight = this.dgmHeightElem.value;
+        this.reset();
+    },
+    update: function(app) {
+        if(this.dgmWidth != this.dgmWidthElem.value ||
+           this.dgmHeight != this.dgmHeightElem.value) {
+            this.dgmWidth = this.dgmWidthElem.value;
+            this.dgmHeight = this.dgmHeightElem.value;
+            this.reset();
+        }
+        this.write();
+    },
+    reset: function() {
+        radius = (this.dgmWidth < 5 && this.dgmHeight < 6) ? 24 : 18;
+        this.gridX = Grid({
+            width: 600,
+            columns: this.dgmWidth
+        });
+        this.gridY = Grid({
+            width: 600,
+            columns: this.dgmHeight
+        });
+        if(this.dgm) {
+            this.dgm.remove();
+        }
+        this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
+                           this.gridX, this.gridY).addChildTo(this);
+    },
+    write: function() {
+        outXyPic.innerHTML = "\\xymatrix{\n"+ this.dgm.toXyPic() +"}";
+    }
+});
+
+phina.define("Diagram", {
+    superClass: "DisplayElement",
+    init: function(w, h, gridX, gridY) {
+        this.superInit();
+        this.w = w;
+        this.h = h;
+        console.log(h);
+        this.objArray = new Array(h);
         for(var i=0; i<h; ++i) {
-            this.table[i] = new Array(w);
+            this.objArray[i] = new Array(w);
             for(var j=0; j<w; ++j) {
-                this.table[i][j] =
-                    new Node(this.jtox(j), this.itoy(i), "("+i+", "+j+")");
+                this.objArray[i][j] =
+                    Obj("("+j+","+i+")",
+                        gridX.span(j) + gridX.unit() / 2,
+                        gridY.span(i) + gridY.unit() / 2)
+                    .addChildTo(this);
             }
         }
-    }
-    toXyPic() {
+    },
+    toXyPic: function() {
         var s = "";
         for(var i=0; i<this.h; ++i) {
             for(var j=0; j<this.w; ++j) {
-                s += this.table[i][j].toXyPic();
+                s += this.objArray[i][j].toXyPic();
                 if (j != this.w-1) {
                     s += " &amp; ";
                 }
@@ -139,51 +195,37 @@ class Diagram {
             s += " \\\\\n";
         }
         return s;
-    }
-    draw(c) {
-        c.fillStyle = "white";
-        c.fillRect(0, 0, cWidth, cHeight);
-        c.fillStyle = "black";
-        for(var i=0; i<this.h; ++i) {
-            for(var j=0; j<this.w; ++j) {
-                this.table[i][j].draw(c);
-            }
-        }
-    }
-    jtox(j) {
-        return (j+0.5) * this.dx;
-    }
-    itoy(i) {
-        return (i+0.5) * this.dy;
-    }
-}
+    },
+});
 
-function update() {
-    outXyPic.innerHTML = "\\xymatrix{\n"+ dgm.toXyPic() +"}";
-    dgm.draw(canvas);
-}
+phina.define("Obj", {
+    superClass: "RectangleShape",
+    init: function(label, x, y) {
+        this.superInit({
+            width: 100,
+            height: 50,
+            fill: null,
+            stroke: "black",
+            cornerRadius: 4,
+            x: x,
+            y: y,
+        });
+        this.label = ObjLabel(label).addChildTo(this);
+        this.width = this.label.calcCanvasWidth();
+    },
+    toXyPic: function() {
+        return this.label.toXyPic();
+    },
+});
 
-function reset() {
-    var width = Number(document.getElementById("dgmWidth").value);
-    var height = Number(document.getElementById("dgmHeight").value);
-    radius = fontHeight = (width < 5 && height < 6) ? 24 : 18;
-    canvas.font = fontHeight + "px 'Times New Roman'";
-    dgm = new Diagram(width, height);
-    dgm.table[0][0].addEdge();
-    dgm.table[0][1].select();
-    update();
-}
-
-window.addEventListener("load",function(eve){
-    var c = document.getElementById("mainc");
-    if(!c.getContext) {
-        return;
-    }
-    cWidth = c.width;
-    cHeight = c.height;
-    canvas = c.getContext("2d");
-    canvas.textBaseline = "middle";
-    outXyPic = document.getElementById("outXyPicContents");
-    conf = document.getElementById("object");
-    reset();
-},false);
+phina.define("ObjLabel", {
+    superClass: "Label",
+    init: function(str) {
+        this.str = str;
+        this.superInit(str);
+        this.stroke = "black";
+    },
+    toXyPic: function() {
+        return this.str;
+    },
+});
