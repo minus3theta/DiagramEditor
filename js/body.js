@@ -215,11 +215,18 @@ phina.define("Obj", {
 phina.define("ObjLabel", {
     superClass: "Label",
     init: function(str) {
-        this.str = str;
         this.superInit(str);
+        this.str = str;
         this.stroke = "black";
     },
     toXyPic: function() {
         return this.str;
+    },
+});
+
+phina.define("Edge", {
+    superClass: "DisplayElement",
+    init: function() {
+        this.superInit();
     },
 });
