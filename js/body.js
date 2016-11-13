@@ -1,9 +1,3 @@
-var outXyPic;
-var dgm;
-var radius;
-
-var conf;
-
 class EdgeStyle {
     constructor(s) {
         this.s = s;             // String
@@ -170,7 +164,6 @@ phina.define("Diagram", {
         this.superInit();
         this.w = w;
         this.h = h;
-        console.log(h);
         this.objArray = new Array(h);
         for(var i=0; i<h; ++i) {
             this.objArray[i] = new Array(w);
@@ -212,6 +205,7 @@ phina.define("Obj", {
         });
         this.label = ObjLabel(label).addChildTo(this);
         this.width = this.label.calcCanvasWidth();
+        this.edges = [];
     },
     toXyPic: function() {
         return this.label.toXyPic();
