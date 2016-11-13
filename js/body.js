@@ -6,6 +6,8 @@ var dgm;
 var radius;
 var fontHeight;
 
+var conf;
+
 class EdgeStyle {
     constructor(s) {
         this.s = s;             // String
@@ -104,6 +106,10 @@ class Node {
             edge.draw(c);
         });
     }
+    select() {
+        conf.innerHTML =
+            "<input type='text' id='obj_label' onchange='update();'></input>";
+    }
 }
 
 class Diagram {
@@ -152,6 +158,11 @@ class Diagram {
     }
 }
 
+function update() {
+    outXyPic.innerHTML = "\\xymatrix{\n"+ dgm.toXyPic() +"}";
+    dgm.draw(canvas);
+}
+
 function reset() {
     var width = Number(document.getElementById("dgmWidth").value);
     var height = Number(document.getElementById("dgmHeight").value);
@@ -159,8 +170,8 @@ function reset() {
     canvas.font = fontHeight + "px 'Times New Roman'";
     dgm = new Diagram(width, height);
     dgm.table[0][0].addEdge();
-    outXyPic.innerHTML = "\\xymatrix{\n"+ dgm.toXyPic() +"}";
-    dgm.draw(canvas);
+    dgm.table[0][1].select();
+    update();
 }
 
 window.addEventListener("load",function(eve){
@@ -173,5 +184,6 @@ window.addEventListener("load",function(eve){
     canvas = c.getContext("2d");
     canvas.textBaseline = "middle";
     outXyPic = document.getElementById("outXyPicContents");
+    conf = document.getElementById("object");
     reset();
 },false);
