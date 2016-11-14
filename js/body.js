@@ -1,6 +1,13 @@
 var objConf;
 var edgeConf;
 
+escapeString = function(str) {
+    return str.replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+}
+
 phina.globalize();
 
 phina.main(function() {
@@ -158,7 +165,7 @@ phina.define("Obj", {
         }
     },
     toXyPic: function() {
-        var s = this.label.text;
+        var s = "{" + escapeString(this.label.text) + "}";
         this.edges.children.forEach(function(e) {
             s += e.toXyPic();
         });
@@ -167,7 +174,8 @@ phina.define("Obj", {
     select: function() {
         this.fill = "#c0c0ff";
         objConf.innerHTML = "<table><tr><td>Label</td>" +
-            "<td><input type='text' id='objLabel' value='" + this.label.text +
+            "<td><input type='text' id='objLabel' value='" +
+            escapeString(this.label.text) +
             "'></td></tr></table>";
         var o = this;
         document.getElementById("objLabel").focus();
@@ -222,7 +230,8 @@ phina.define("Edge", {
     select: function() {
         this.frame.fill = "#c0ffc0";
         edgeConf.innerHTML = "<table><tr><td>Label</td>" +
-            "<td><input type='text' id='edgeLabel' value='" + this.label.text +
+            "<td><input type='text' id='edgeLabel' value='" +
+            escapeString(this.label.text) +
             "'></td></tr><tr><td>Position</td>" +
             "<td><label><input type='radio' name='edgePos' id='edgePos^' value='^'" +
             (this.pos === "^" ? " checked" : "") + ">^</label>" +
@@ -260,8 +269,9 @@ phina.define("Edge", {
         } else {
             dir += "l".repeat(-this.stepJ);
         }
-        return " \\ar" + this.style + "[" + dir + "]" + this.pos +
-            "-{" + this.label.text + "}";
+        return " \\ar" + escapeString(this.style) + "[" + dir + "]" +
+            escapeString(this.pos) +
+            "-{" + escapeString(this.label.text) + "}";
     },
     draw: function(canvas) {
         canvas.drawArrow(this.x0, this.y0, this.x1, this.y1, 10);
