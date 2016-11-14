@@ -89,7 +89,7 @@ phina.define("Diagram", {
         this.release = function(src) {
             var dst = null;
             var p = this.p;
-            this.children.some(function(o) {
+            this.children.forEach(function(o) {
                 if(o.hitTest(this.p.position.x, this.p.position.y)) {
                     dst = o;
                 }
@@ -117,15 +117,15 @@ phina.define("Diagram", {
         return s;
     },
     unselectObj: function() {
-        this.children.some(function(o) {
+        this.children.forEach(function(o) {
             o.fill = null;
         });
     },
     unselectEdge: function() {
-        this.children.some(function(o) {
-            for(var i=0; i<o.edges.length; ++i) {
-                o.edges[i].frame.fill = "white";
-            }
+        this.children.forEach(function(o) {
+            o.edges.children.forEach(function(e) {
+                e.frame.fill = "white";
+            });
         });
     },
 });
@@ -147,7 +147,7 @@ phina.define("Obj", {
         this.j = j;
         this.label = Label(text).addChildTo(this);
         this.width = Math.max(this.label.calcCanvasWidth(), 50);
-        this.edges = [];
+        this.edges = DisplayElement().addChildTo(this);
         this.setInteractive(true);
         this.onpointend = function() {
             this.parent.release(this);
@@ -155,9 +155,9 @@ phina.define("Obj", {
     },
     toXyPic: function() {
         var s = this.label.text;
-        for(var i=0; i<this.edges.length; ++i) {
-            s += this.edges[i].toXyPic();
-        }
+        this.edges.children.forEach(function(e) {
+            s += e.toXyPic();
+        });
         return s;
     },
     select: function() {
@@ -173,8 +173,7 @@ phina.define("Obj", {
     },
     addEdge: function(dst, text, pos, style) {
         var e = Edge(this, dst, text, pos, style);
-        this.edges.push(e);
-        e.addChildTo(this);
+        e.addChildTo(this.edges);
     },
 });
 
@@ -209,7 +208,7 @@ phina.define("Edge", {
         this.frame.setInteractive(true);
         var e = this;
         this.frame.onpointstart = function() {
-            e.parent.parent.unselectEdge();
+            src.parent.unselectEdge();
             e.select();
         };
         src.parent.unselectEdge();
