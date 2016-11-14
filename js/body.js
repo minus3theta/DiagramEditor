@@ -226,8 +226,13 @@ phina.define("Edge", {
             (this.pos === "_" ? " checked" : "") + ">_</label>" +
             "</tr><tr><td>Style</td>" +
             "<td><input type='text' id='edgeStyle' value='" +
-            this.style + "'></td></tr></table>";
+            this.style + "'></td></tr><tr><td colspan='2'>" +
+            "<input type='button' id='edgeDel' value='Delete'></td></tr></table>";
         var e = this;
+        document.getElementById("edgeDel").onclick = function() {
+            console.log("pohe");
+            e.remove();
+        }
         edgeConf.onchange = function() {
             e.label.text = document.getElementById("edgeLabel").value;
             e.frame.width = Math.max(e.label.calcCanvasWidth(), 50);
