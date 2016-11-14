@@ -95,6 +95,7 @@ phina.define("Diagram", {
                 }
             }, this);
             if(src == dst) {
+                this.unselectObj();
                 src.select();
             } else if(dst != null) {
                 src.addEdge(dst, "", "^", "");
@@ -114,6 +115,18 @@ phina.define("Diagram", {
             s += " \\\\\n";
         }
         return s;
+    },
+    unselectObj: function() {
+        this.children.some(function(o) {
+            o.fill = null;
+        });
+    },
+    unselectEdge: function() {
+        this.children.some(function(o) {
+            for(var i=0; i<o.edges.length; ++i) {
+                o.edges[i].frame.fill = "white";
+            }
+        });
     },
 });
 
@@ -148,6 +161,7 @@ phina.define("Obj", {
         return s;
     },
     select: function() {
+        this.fill = "#c0c0ff";
         objConf.innerHTML = "<table><tr><td>Label</td>" +
             "<td><input type='text' id='objLabel' value='" + this.label.text +
             "'></td></tr></table>";
@@ -193,12 +207,16 @@ phina.define("Edge", {
         this.pos = pos;
         this.style = style;
         this.frame.setInteractive(true);
+        var e = this;
         this.frame.onpointstart = function() {
-            this.parent.select();
+            e.parent.parent.unselectEdge();
+            e.select();
         };
+        src.parent.unselectEdge();
         this.select();
     },
     select: function() {
+        this.frame.fill = "#c0ffc0";
         edgeConf.innerHTML = "<table><tr><td>Label</td>" +
             "<td><input type='text' id='edgeLabel' value='" + this.label.text +
             "'></td></tr><tr><td>Position</td>" +
