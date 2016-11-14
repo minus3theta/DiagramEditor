@@ -1,3 +1,5 @@
+var conf;
+
 phina.globalize();
 
 phina.main(function() {
@@ -48,7 +50,7 @@ phina.define("MainScene", {
         }
         this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
                            this.gridX, this.gridY).addChildTo(this);
-        this.dgm.objs[1][1].addEdge(this.dgm.objs[0][0], "f", "^", "");
+        // this.dgm.objs[1][1].addEdge(this.dgm.objs[0][0], "f", "^", "");
     },
     write: function() {
         outXyPic.innerHTML = "\\xymatrix{\n"+ this.dgm.toXyPic() +"}";
@@ -80,6 +82,23 @@ phina.define("Diagram", {
                     .addChildTo(this);
             }
         }
+        this.onenterframe = function(e) {
+            this.p = e.app.pointer;
+        };
+        this.release = function(src) {
+            var dst = null;
+            var p = this.p;
+            this.children.some(function(o) {
+                if(o.hitTest(this.p.position.x, this.p.position.y)) {
+                    dst = o;
+                }
+            }, this);
+            if(src == dst) {
+                src.select();
+            } else if(dst != null) {
+                src.addEdge(dst, "f", "^", "");
+            }
+        };
     },
     toXyPic: function() {
         var s = "";
@@ -104,6 +123,7 @@ phina.define("Obj", {
             height: 50,
             fill: null,
             stroke: "black",
+            strokeWidth: 2,
             cornerRadius: 4,
             x: x,
             y: y,
@@ -111,9 +131,12 @@ phina.define("Obj", {
         this.i = i;
         this.j = j;
         this.label = Label(text).addChildTo(this);
-        this.label.stroke = "black";
         this.width = this.label.calcCanvasWidth();
         this.edges = [];
+        this.setInteractive(true);
+        this.onpointend = function() {
+            this.parent.release(this);
+        }
     },
     toXyPic: function() {
         var s = this.label.text;
@@ -121,6 +144,9 @@ phina.define("Obj", {
             s += this.edges[i].toXyPic();
         }
         return s;
+    },
+    select: function() {
+        console.log(this.i, this.j);
     },
     addEdge: function(dst, text, pos, style) {
         var e = Edge(this, dst, text, pos, style);
@@ -148,6 +174,7 @@ phina.define("Edge", {
             height: 50,
             fill: null,
             stroke: "gray",
+            strokeWidth: 2,
             cornerRadius: 4,
             x: dx / 2,
             y: dy / 2,
