@@ -170,6 +170,7 @@ phina.define("Obj", {
             "<td><input type='text' id='objLabel' value='" + this.label.text +
             "'></td></tr></table>";
         var o = this;
+        document.getElementById("objLabel").focus();
         objConf.onchange = function() {
             o.label.text = document.getElementById("objLabel").value;
             o.width = Math.max(o.label.calcCanvasWidth(), 50);
@@ -232,6 +233,7 @@ phina.define("Edge", {
             this.style + "'></td></tr><tr><td colspan='2'>" +
             "<input type='button' id='edgeDel' value='Delete'></td></tr></table>";
         var e = this;
+        document.getElementById("edgeLabel").focus();
         document.getElementById("edgeDel").onclick = function() {
             e.remove();
         }
