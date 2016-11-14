@@ -1,4 +1,5 @@
-var conf;
+var objConf;
+var edgeConf;
 
 phina.globalize();
 
@@ -19,7 +20,8 @@ phina.define("MainScene", {
         this.superInit();
         this.backgroundColor = '#fff';
         outXyPic = document.getElementById("outXyPicContents");
-        conf = document.getElementById("object");
+        objConf = document.getElementById("object");
+        edgeConf = document.getElementById("edge");
         this.dgmWidthElem = document.getElementById("dgmWidth");
         this.dgmHeightElem = document.getElementById("dgmHeight");
         this.dgmWidth = this.dgmWidthElem.value;
@@ -50,7 +52,6 @@ phina.define("MainScene", {
         }
         this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
                            this.gridX, this.gridY).addChildTo(this);
-        // this.dgm.objs[1][1].addEdge(this.dgm.objs[0][0], "f", "^", "");
     },
     write: function() {
         outXyPic.innerHTML = "\\xymatrix{\n"+ this.dgm.toXyPic() +"}";
@@ -76,7 +77,7 @@ phina.define("Diagram", {
             this.objs[i] = new Array(w);
             for(var j=0; j<w; ++j) {
                 this.objs[i][j] =
-                    Obj("("+j+","+i+")", i, j,
+                    Obj("", i, j,
                         gridX.span(j) + gridX.unit() / 2,
                         gridY.span(i) + gridY.unit() / 2)
                     .addChildTo(this);
@@ -96,9 +97,10 @@ phina.define("Diagram", {
             if(src == dst) {
                 src.select();
             } else if(dst != null) {
-                src.addEdge(dst, "f", "^", "");
+                src.addEdge(dst, "", "^", "");
             }
         };
+        this.setInteractive(true);
     },
     toXyPic: function() {
         var s = "";
@@ -131,7 +133,7 @@ phina.define("Obj", {
         this.i = i;
         this.j = j;
         this.label = Label(text).addChildTo(this);
-        this.width = this.label.calcCanvasWidth();
+        this.width = Math.max(this.label.calcCanvasWidth(), 50);
         this.edges = [];
         this.setInteractive(true);
         this.onpointend = function() {
@@ -146,7 +148,14 @@ phina.define("Obj", {
         return s;
     },
     select: function() {
-        console.log(this.i, this.j);
+        objConf.innerHTML = "<table><tr><td>Label</td>" +
+            "<td><input type='text' id='objLabel' value='" + this.label.text +
+            "'></td></tr></table>";
+        var o = this;
+        objConf.onchange = function() {
+            o.label.text = document.getElementById("objLabel").value;
+            o.width = Math.max(o.label.calcCanvasWidth(), 50);
+        };
     },
     addEdge: function(dst, text, pos, style) {
         var e = Edge(this, dst, text, pos, style);
@@ -172,7 +181,7 @@ phina.define("Edge", {
         this.frame = RectangleShape({
             width: 0,
             height: 50,
-            fill: null,
+            fill: "white",
             stroke: "gray",
             strokeWidth: 2,
             cornerRadius: 4,
@@ -180,9 +189,37 @@ phina.define("Edge", {
             y: dy / 2,
         }).addChildTo(this);
         this.label = Label(text).addChildTo(this.frame);
-        this.frame.width = this.label.calcCanvasWidth();
+        this.frame.width = Math.max(this.label.calcCanvasWidth(), 50);
         this.pos = pos;
         this.style = style;
+        this.frame.setInteractive(true);
+        this.frame.onpointstart = function() {
+            this.parent.select();
+        };
+        this.select();
+    },
+    select: function() {
+        edgeConf.innerHTML = "<table><tr><td>Label</td>" +
+            "<td><input type='text' id='edgeLabel' value='" + this.label.text +
+            "'></td></tr><tr><td>Position</td>" +
+            "<td><label><input type='radio' name='edgePos' id='edgePos^' value='^'" +
+            (this.pos === "^" ? " checked" : "") + ">^</label>" +
+            "<label><input type='radio' name='edgePos' id='edgePos_' value='_'" +
+            (this.pos === "_" ? " checked" : "") + ">_</label>" +
+            "</tr><tr><td>Style</td>" +
+            "<td><input type='text' id='edgeStyle' value='" +
+            this.style + "'></td></tr></table>";
+        var e = this;
+        edgeConf.onchange = function() {
+            e.label.text = document.getElementById("edgeLabel").value;
+            e.frame.width = Math.max(e.label.calcCanvasWidth(), 50);
+            if(document.getElementById("edgePos^").checked) {
+                e.pos = "^";
+            } else {
+                e.pos = "_";
+            }
+            e.style = document.getElementById("edgeStyle").value;
+        };
     },
     toXyPic: function() {
         var dir = "";
@@ -196,7 +233,8 @@ phina.define("Edge", {
         } else {
             dir += "l".repeat(-this.stepJ);
         }
-        return " \\ar[" + dir + "]" + this.pos + "-{" + this.label.text + "}";
+        return " \\ar" + this.style + "[" + dir + "]" + this.pos +
+            "-{" + this.label.text + "}";
     },
     draw: function(canvas) {
         canvas.drawArrow(this.x0, this.y0, this.x1, this.y1, 10);
