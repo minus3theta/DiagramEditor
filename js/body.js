@@ -48,6 +48,8 @@ phina.define("MainScene", {
             columns: this.dgmHeight
         });
         if(this.dgm) {
+            this.dgm.unselectObj();
+            this.dgm.unselectEdge();
             this.dgm.remove();
         }
         this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
@@ -120,6 +122,7 @@ phina.define("Diagram", {
         this.children.forEach(function(o) {
             o.fill = null;
         });
+        objConf.innerHTML = "";
     },
     unselectEdge: function() {
         this.children.forEach(function(o) {
@@ -127,6 +130,7 @@ phina.define("Diagram", {
                 e.frame.fill = "white";
             });
         });
+        edgeConf.innerHTML = "";
     },
 });
 
@@ -229,7 +233,6 @@ phina.define("Edge", {
             "<input type='button' id='edgeDel' value='Delete'></td></tr></table>";
         var e = this;
         document.getElementById("edgeDel").onclick = function() {
-            console.log("pohe");
             e.remove();
         }
         edgeConf.onchange = function() {
