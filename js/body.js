@@ -1,3 +1,4 @@
+var outXyPic;
 var objConf;
 var edgeConf;
 
@@ -110,7 +111,6 @@ phina.define("Diagram", {
                 src.addEdge(dst, "", "^", "");
             }
         };
-        this.setInteractive(true);
     },
     toXyPic: function() {
         var s = "";
