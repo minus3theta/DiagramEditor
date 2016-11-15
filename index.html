@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdn.rawgit.com/phi-jp/phina.js/v0.2.0/build/phina.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX","output/HTML-CSS"],
+      "HTML-CSS": {
+      styles: {".MathJax_Preview": {visibility: "hidden"}}
+      },
+      tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]},
+      TeX: {extensions: ["AMSmath.js","AMSsymbols.js","https://minus3theta.github.io/DiagramEditor/js/xypic.js"]}
+      });
+    </script>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js"></script>
     <script src="js/body.js"></script>
   </head>
   <body>
@@ -30,6 +42,10 @@
         <div id="object"></div>
         <h2>Edge Config</h2>
         <div id="edge"></div>
+      </div>
+      <div>
+        <h2>Preview</h2>
+        <div id="preview"></div>
       </div>
     </div>
     <div id="output">

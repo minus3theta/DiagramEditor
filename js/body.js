@@ -1,4 +1,5 @@
 var outXyPic;
+var preview;
 var objConf;
 var edgeConf;
 
@@ -28,6 +29,7 @@ phina.define("MainScene", {
         this.superInit();
         this.backgroundColor = '#fff';
         outXyPic = document.getElementById("outXyPicContents");
+        preview = document.getElementById("preview");
         objConf = document.getElementById("object");
         edgeConf = document.getElementById("edge");
         this.dgmWidthElem = document.getElementById("dgmWidth");
@@ -43,10 +45,8 @@ phina.define("MainScene", {
             this.dgmHeight = this.dgmHeightElem.value;
             this.reset();
         }
-        this.write();
     },
     reset: function() {
-        radius = (this.dgmWidth < 5 && this.dgmHeight < 6) ? 24 : 18;
         this.gridX = Grid({
             width: 600,
             columns: this.dgmWidth
@@ -59,13 +59,12 @@ phina.define("MainScene", {
             this.dgm.unselectObj();
             this.dgm.unselectEdge();
             this.dgm.remove();
+            preview.innerHTML = "";
         }
         this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
                            this.gridX, this.gridY).addChildTo(this);
+        this.dgm.write();
     },
-    write: function() {
-        outXyPic.innerHTML = "\\xymatrix{\n"+ this.dgm.toXyPic() +"}";
-    }
 });
 
 phina.define("Diagram", {
@@ -111,6 +110,7 @@ phina.define("Diagram", {
                 src.addEdge(dst, "", "^", "");
             }
         };
+        this.setInteractive(true);
     },
     toXyPic: function() {
         var s = "";
@@ -138,6 +138,12 @@ phina.define("Diagram", {
             });
         });
         edgeConf.innerHTML = "";
+    },
+    write: function() {
+        var xy = "\\xymatrix{\n" + this.toXyPic() + "}";
+        outXyPic.innerHTML = xy;
+        preview.innerHTML = "\\(\n" + xy + "\\)";
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "preview"]);
     },
 });
 
@@ -182,11 +188,13 @@ phina.define("Obj", {
         objConf.onchange = function() {
             o.label.text = document.getElementById("objLabel").value;
             o.width = Math.max(o.label.calcCanvasWidth(), 50);
+            o.parent.write();
         };
     },
     addEdge: function(dst, text, pos, style) {
         var e = Edge(this, dst, text, pos, style);
         e.addChildTo(this.edges);
+        this.parent.write();
     },
 });
 
@@ -255,6 +263,7 @@ phina.define("Edge", {
                 e.pos = "_";
             }
             e.style = document.getElementById("edgeStyle").value;
+            e.parent.parent.parent.write();
         };
     },
     toXyPic: function() {
