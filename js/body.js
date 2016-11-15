@@ -230,12 +230,12 @@ phina.define("Edge", {
         var e = this;
         this.frame.onpointstart = function() {
             src.parent.unselectEdge();
-            e.select();
+            e.select(src);
         };
         src.parent.unselectEdge();
-        this.select();
+        this.select(src);
     },
-    select: function() {
+    select: function(obj) {
         this.frame.fill = "#c0ffc0";
         edgeConf.innerHTML = "<table><tr><td>Label</td>" +
             "<td><input type='text' id='edgeLabel' value='" +
@@ -253,6 +253,7 @@ phina.define("Edge", {
         document.getElementById("edgeLabel").focus();
         document.getElementById("edgeDel").onclick = function() {
             e.remove();
+            obj.parent.write();
         }
         edgeConf.onchange = function() {
             e.label.text = document.getElementById("edgeLabel").value;
