@@ -3,9 +3,9 @@ var preview;
 var objConf;
 var edgeConf;
 
-var FONT_SIZE = 32;
-var FRAME_SIZE = 50;
-var FONT_FAMILY = null;
+var FONT_SIZE = 24;
+var FRAME_SIZE = 36;
+var FONT_FAMILY = "'Source Code Pro', monospace";
 
 escapeString = function(str) {
     return str.replace(/&/g, "&amp;")
