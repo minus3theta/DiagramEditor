@@ -265,6 +265,7 @@ phina.define("Edge", {
         document.getElementById("edgeLabel").focus();
         document.getElementById("edgeDel").onclick = function() {
             e.remove();
+            obj.parent.unselectEdge();
             obj.parent.write();
         }
         edgeConf.onchange = function() {
