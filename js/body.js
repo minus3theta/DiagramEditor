@@ -3,6 +3,10 @@ var preview;
 var objConf;
 var edgeConf;
 
+var FONT_SIZE = 32;
+var FRAME_SIZE = 50;
+var FONT_FAMILY = null;
+
 escapeString = function(str) {
     return str.replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -151,8 +155,8 @@ phina.define("Obj", {
     superClass: "RectangleShape",
     init: function(text, i, j, x, y) {
         this.superInit({
-            width: 100,
-            height: 50,
+            width: FRAME_SIZE,
+            height: FRAME_SIZE,
             fill: null,
             stroke: "black",
             strokeWidth: 2,
@@ -162,8 +166,12 @@ phina.define("Obj", {
         });
         this.i = i;
         this.j = j;
-        this.label = Label(text).addChildTo(this);
-        this.width = Math.max(this.label.calcCanvasWidth(), 50);
+        this.label = Label({
+            text: text,
+            fontSize: FONT_SIZE,
+            fontFamily: FONT_FAMILY,
+        }).addChildTo(this);
+        this.width = Math.max(this.label.calcCanvasWidth(), FRAME_SIZE);
         this.edges = DisplayElement().addChildTo(this);
         this.setInteractive(true);
         this.onpointend = function() {
@@ -187,7 +195,7 @@ phina.define("Obj", {
         document.getElementById("objLabel").focus();
         objConf.onchange = function() {
             o.label.text = document.getElementById("objLabel").value;
-            o.width = Math.max(o.label.calcCanvasWidth(), 50);
+            o.width = Math.max(o.label.calcCanvasWidth(), FRAME_SIZE);
             o.parent.write();
         };
     },
@@ -213,8 +221,8 @@ phina.define("Edge", {
         this.stepI = dst.i - src.i;
         this.stepJ = dst.j - src.j;
         this.frame = RectangleShape({
-            width: 0,
-            height: 50,
+            width: FRAME_SIZE,
+            height: FRAME_SIZE,
             fill: "white",
             stroke: "gray",
             strokeWidth: 2,
@@ -222,8 +230,12 @@ phina.define("Edge", {
             x: dx / 2,
             y: dy / 2,
         }).addChildTo(this);
-        this.label = Label(text).addChildTo(this.frame);
-        this.frame.width = Math.max(this.label.calcCanvasWidth(), 50);
+        this.label = Label({
+            text: text,
+            fontSize: FONT_SIZE,
+            fontFamily: FONT_FAMILY,
+        }).addChildTo(this.frame);
+        this.frame.width = Math.max(this.label.calcCanvasWidth(), FRAME_SIZE);
         this.pos = pos;
         this.style = style;
         this.frame.setInteractive(true);
@@ -257,7 +269,7 @@ phina.define("Edge", {
         }
         edgeConf.onchange = function() {
             e.label.text = document.getElementById("edgeLabel").value;
-            e.frame.width = Math.max(e.label.calcCanvasWidth(), 50);
+            e.frame.width = Math.max(e.label.calcCanvasWidth(), FRAME_SIZE);
             if(document.getElementById("edgePos^").checked) {
                 e.pos = "^";
             } else {
