@@ -23,3 +23,7 @@ canvas {
     padding: 10px;
     border: 1px solid #000000;
 }
+
+#outXyPicContents {
+    font-size: 14px;
+}

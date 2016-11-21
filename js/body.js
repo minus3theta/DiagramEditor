@@ -36,6 +36,10 @@ phina.define("MainScene", {
         preview = document.getElementById("preview");
         objConf = document.getElementById("object");
         edgeConf = document.getElementById("edge");
+        document.getElementById("copyXyPic").onclick = function(e) {
+            outXyPic.select();
+            document.execCommand("copy");
+        };
         this.dgmWidthElem = document.getElementById("dgmWidth");
         this.dgmHeightElem = document.getElementById("dgmHeight");
         this.dgmWidth = this.dgmWidthElem.value;
