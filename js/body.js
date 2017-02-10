@@ -2,6 +2,7 @@ var outXyPic;
 var preview;
 var objConf;
 var edgeConf;
+var macros;
 
 var FONT_SIZE = 24;
 var FRAME_SIZE = 36;
@@ -36,6 +37,7 @@ phina.define("MainScene", {
         preview = document.getElementById("preview");
         objConf = document.getElementById("object");
         edgeConf = document.getElementById("edge");
+        macros = document.getElementById("macros");
         document.getElementById("copyXyPic").onclick = function(e) {
             outXyPic.select();
             document.execCommand("copy");
@@ -72,6 +74,10 @@ phina.define("MainScene", {
         this.dgm = Diagram(this.dgmWidth, this.dgmHeight,
                            this.gridX, this.gridY).addChildTo(this);
         this.dgm.write();
+        var self = this;
+        macros.onchange = function() {
+            self.dgm.write();
+        };
     },
 });
 
@@ -150,7 +156,7 @@ phina.define("Diagram", {
     write: function() {
         var xy = "\\xymatrix{\n" + this.toXyPic() + "}";
         outXyPic.innerHTML = xy;
-        preview.innerHTML = "\\(\n" + xy + "\\)";
+        preview.innerHTML = "\\(\n" + macros.value + xy + "\\)";
         MathJax.Hub.Queue(["Typeset", MathJax.Hub, "preview"]);
     },
 });
